@@ -29,22 +29,22 @@ module Masamune::Commands
     include Masamune::Commands::PostgresCommon
 
     DEFAULT_ATTRIBUTES =
-      {
-        create_db_path: 'createdb',
-        drop_db_path: 'dropdb',
-        pg_dump_path: 'pg_dump',
-        options: [],
-        hostname: 'localhost',
-        username: 'postgres',
-        pgpass_file: nil,
-        action: nil,
-        database: nil,
-        output: nil
-      }.freeze
+    {
+      create_db_path: 'createdb',
+      drop_db_path: 'dropdb',
+      pg_dump_path: 'pg_dump',
+      options: [],
+      hostname: 'localhost',
+      username: 'postgres',
+      pgpass_file: nil,
+      action: nil,
+      database: nil,
+      output: nil
+    }.with_indifferent_access.freeze
 
     def initialize(delegate, attrs = {})
       super delegate
-      DEFAULT_ATTRIBUTES.merge(configuration.postgres).merge(configuration.postgres_admin).merge(attrs).each do |name, value|
+      DEFAULT_ATTRIBUTES.merge(configuration.commands.postgres).merge(configuration.commands.postgres_admin).merge(attrs).each do |name, value|
         instance_variable_set("@#{name}", value)
       end
     end

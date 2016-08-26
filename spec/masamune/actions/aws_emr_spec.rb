@@ -33,22 +33,33 @@ describe Masamune::Actions::AwsEmr do
   let(:configuration) { {} }
 
   before do
-    allow(instance).to receive_message_chain(:configuration, :aws_emr).and_return(configuration)
+    allow(instance).to receive_message_chain(:configuration, :commands, :aws_emr).and_return(configuration)
   end
 
   describe '.aws_emr' do
-    before do
-      mock_command(/\Aaws emr/, mock_success)
+    subject(:action) { instance.aws_emr }
+
+    context 'when success' do
+      before do
+        mock_command(/\Aaws emr/, mock_success)
+      end
+
+      it { is_expected.to be_success }
     end
 
-    subject { instance.aws_emr }
+    context 'when failure' do
+      before do
+        mock_command(/\Aaws emr/, mock_failure)
+      end
 
-    it { is_expected.to be_success }
+      it { expect { action }.to raise_error RuntimeError, 'fail_fast: aws emr ssh' }
+    end
 
     context 'with retries and backoff' do
       before do
-        allow(instance).to receive_message_chain(:configuration, :aws_emr).and_return(retries: 1, backoff: 10)
+        allow(instance).to receive_message_chain(:configuration, :commands, :aws_emr).and_return(retries: 1, backoff: 10)
         expect(Masamune::Commands::RetryWithBackoff).to receive(:new).with(anything, hash_including(retries: 1, backoff: 10)).once.and_call_original
+        mock_command(/\Aaws emr/, mock_success)
       end
 
       it { is_expected.to be_success }
@@ -79,7 +90,7 @@ describe Masamune::Actions::AwsEmr do
       end
       it do
         expect { subject }.to_not raise_error
-        expect(instance.configuration.aws_emr[:cluster_id]).to eq('j-XYZ')
+        expect(instance.configuration.commands.aws_emr[:cluster_id]).to eq('j-XYZ')
       end
     end
 
@@ -100,7 +111,7 @@ describe Masamune::Actions::AwsEmr do
       end
       it do
         expect { subject }.to_not raise_error
-        expect(instance.configuration.aws_emr[:cluster_id]).to eq('j-XYZ')
+        expect(instance.configuration.commands.aws_emr[:cluster_id]).to eq('j-XYZ')
       end
     end
   end

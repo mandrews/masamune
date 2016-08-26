@@ -49,13 +49,13 @@ module Masamune::Commands
       extra: [],
       upload: true,
       quote: false
-    }.freeze
+    }.with_indifferent_access.freeze
 
     attr_reader :input
 
     def initialize(delegate, attrs = {})
       super delegate
-      DEFAULT_ATTRIBUTES.merge(configuration.hadoop_streaming).merge(attrs).each do |name, value|
+      DEFAULT_ATTRIBUTES.merge(configuration.commands.hadoop_streaming).merge(attrs).each do |name, value|
         instance_variable_set("@#{name}", value)
       end
       @input = Array.wrap(@input)

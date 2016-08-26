@@ -25,17 +25,17 @@ require 'delegate'
 module Masamune::Commands
   class HadoopFilesystem < SimpleDelegator
     DEFAULT_ATTRIBUTES =
-      {
-        path: 'hadoop',
-        options: [],
-        extra: [],
-        block: nil,
-        print: false
-      }.freeze
+    {
+      path: 'hadoop',
+      options: [],
+      extra: [],
+      block: nil,
+      print: false
+    }.with_indifferent_access.freeze
 
     def initialize(delegate, attrs = {})
       super delegate
-      DEFAULT_ATTRIBUTES.merge(configuration.hadoop_filesystem).merge(attrs).each do |name, value|
+      DEFAULT_ATTRIBUTES.merge(configuration.commands.hadoop_filesystem).merge(attrs).each do |name, value|
         instance_variable_set("@#{name}", value)
       end
     end

@@ -31,28 +31,28 @@ module Masamune::Commands
     include Masamune::Commands::PostgresCommon
 
     DEFAULT_ATTRIBUTES =
-      {
-        path: 'psql',
-        options: [],
-        hostname: 'localhost',
-        database: 'postgres',
-        username: 'postgres',
-        pgpass_file: nil,
-        file: nil,
-        exec: nil,
-        input: nil,
-        output: nil,
-        print: false,
-        block: nil,
-        csv: false,
-        variables: {},
-        tuple_output: false,
-        debug: false
-      }.freeze
+    {
+      path: 'psql',
+      options: [],
+      hostname: 'localhost',
+      database: 'postgres',
+      username: 'postgres',
+      pgpass_file: nil,
+      file: nil,
+      exec: nil,
+      input: nil,
+      output: nil,
+      print: false,
+      block: nil,
+      csv: false,
+      variables: {},
+      tuple_output: false,
+      debug: false
+    }.with_indifferent_access.freeze
 
     def initialize(delegate, attrs = {})
       super delegate
-      DEFAULT_ATTRIBUTES.merge(configuration.postgres).merge(attrs).each do |name, value|
+      DEFAULT_ATTRIBUTES.merge(configuration.commands.postgres).merge(attrs).each do |name, value|
         instance_variable_set("@#{name}", value)
       end
       raise ArgumentError, 'Cannot specify both file and exec' if @file && @exec

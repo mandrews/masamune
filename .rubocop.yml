@@ -1,5 +1,5 @@
 AllCops:
-  TargetRubyVersion: 2.0
+  TargetRubyVersion: 2.1
 
 Metrics/AbcSize:
   Enabled: false
@@ -38,4 +38,7 @@ Style/MultilineOperationIndentation:
   Enabled: false
 
 Style/ClassAndModuleChildren:
+  Enabled: false
+
+Style/NumericLiteralPrefix:
   Enabled: false

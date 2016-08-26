@@ -33,28 +33,28 @@ module Masamune::Commands
     PROMPT = 'hive>'.freeze
 
     DEFAULT_ATTRIBUTES =
-      {
-        path: 'hive',
-        options: [],
-        database: 'default',
-        setup_files: [],
-        schema_files: [],
-        file: nil,
-        exec: nil,
-        output: nil,
-        print: false,
-        block: nil,
-        variables: {},
-        buffer: nil,
-        service: false,
-        delimiter: "\001",
-        csv: false,
-        debug: false
-      }.freeze
+    {
+      path: 'hive',
+      options: [],
+      database: 'default',
+      setup_files: [],
+      schema_files: [],
+      file: nil,
+      exec: nil,
+      output: nil,
+      print: false,
+      block: nil,
+      variables: {},
+      buffer: nil,
+      service: false,
+      delimiter: "\001",
+      csv: false,
+      debug: false
+    }.with_indifferent_access.freeze
 
     def initialize(delegate, attrs = {})
       super delegate
-      DEFAULT_ATTRIBUTES.merge(configuration.hive).merge(attrs).each do |name, value|
+      DEFAULT_ATTRIBUTES.merge(configuration.commands.hive).merge(attrs).each do |name, value|
         instance_variable_set("@#{name}", value)
       end
       raise ArgumentError, 'Cannot specify both file and exec' if @file && @exec

@@ -25,16 +25,16 @@ require 'delegate'
 module Masamune::Commands
   class S3Cmd < SimpleDelegator
     DEFAULT_ATTRIBUTES =
-      {
-        path: 's3cmd',
-        options: [],
-        extra: [],
-        block: nil
-      }.freeze
+    {
+      path: 's3cmd',
+      options: [],
+      extra: [],
+      block: nil
+    }.with_indifferent_access.freeze
 
     def initialize(delegate, attrs = {})
       super delegate
-      DEFAULT_ATTRIBUTES.merge(configuration.s3cmd).merge(attrs).each do |name, value|
+      DEFAULT_ATTRIBUTES.merge(configuration.commands.s3cmd).merge(attrs).each do |name, value|
         instance_variable_set("@#{name}", value)
       end
     end

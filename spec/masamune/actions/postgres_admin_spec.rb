@@ -30,6 +30,28 @@ describe Masamune::Actions::PostgresAdmin do
 
   let(:instance) { klass.new }
 
+  shared_context 'retries and backoff' do
+    context 'with retries and backoff configured via postgres_admin command' do
+      before do
+        allow(instance).to receive_message_chain(:configuration, :commands, :postgres).and_return(retries: 1, backoff: 10)
+        allow(instance).to receive_message_chain(:configuration, :commands, :postgres_admin).and_return(retries: 3, backoff: 1)
+        expect(Masamune::Commands::RetryWithBackoff).to receive(:new).with(anything, hash_including(retries: 3, backoff: 1)).once.and_call_original
+      end
+
+      it { is_expected.to be_success }
+    end
+
+    context 'with retries and backoff configured via postgres command' do
+      before do
+        allow(instance).to receive_message_chain(:configuration, :commands, :postgres).and_return(retries: 1, backoff: 10)
+        allow(instance).to receive_message_chain(:configuration, :commands, :postgres_admin).and_return({})
+        expect(Masamune::Commands::RetryWithBackoff).to receive(:new).with(anything, hash_including(retries: 1, backoff: 10)).once.and_call_original
+      end
+
+      it { is_expected.to be_success }
+    end
+  end
+
   describe '.postgres_admin' do
     subject { instance.postgres_admin(action: action, database: 'zombo') }
 
@@ -37,20 +59,24 @@ describe Masamune::Actions::PostgresAdmin do
       let(:action) { :create }
 
       before do
-        mock_command(/\Acreatedb/, mock_success)
+        mock_command(/\APGOPTIONS=.* createdb/, mock_success)
       end
 
       it { is_expected.to be_success }
+
+      include_context 'retries and backoff'
     end
 
     context 'with :action :drop' do
       let(:action) { :drop }
 
       before do
-        mock_command(/\Adropdb/, mock_success)
+        mock_command(/\APGOPTIONS=.* dropdb/, mock_success)
       end
 
       it { is_expected.to be_success }
+
+      include_context 'retries and backoff'
     end
   end
 end
